@@ -1,0 +1,4 @@
+github.com/dongri/phonenumber v0.0.0-20220127125919-1e58a2b4cf97 h1:ADfzF979PVc2TasBY6aqeOpM5nj3PNQEybBbKuVcpDI=
+github.com/dongri/phonenumber v0.0.0-20220127125919-1e58a2b4cf97/go.mod h1:G6eIK4UOT7iAcInROB6it2kRqlpR1U1GD2gqR9U5bGs=
+github.com/google/uuid v1.3.0 h1:t6JiXgmwXMjEs8VusXIJk2BXHsn+wx8BZdTaoZ5fu7I=
+github.com/google/uuid v1.3.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
