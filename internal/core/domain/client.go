@@ -19,7 +19,7 @@ const (
 	cnpj_max_length       = 16
 	email_regex           = "^[a-zA-Z0-9.!#$%&'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]" +
 	"{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"
-
+	default_county        = "BR"
 )
 
 type Client struct {
@@ -48,12 +48,17 @@ func (c *Client) ValidateId() error {
 
 func (c *Client) ValidateName() error {
 	if c.Name == "" {
-		return errors.New("name should no be empty")
+		return errors.New("name should not be empty")
 	}
 	return nil
 }
 
 func (c *Client) ValidateDocument() error {
+	// validate if it is not empty
+	if c.Document == uint64(0) {
+		return errors.New("document should no be empty")
+	}
+	// validate if it is valid CPF ou CNPJ
 	if !c.IsDocumentCPF() && !c.IsDocumentCNPJ() {
 		return errors.New("document should have a CPF or CNPJ number")
 	}
@@ -61,9 +66,9 @@ func (c *Client) ValidateDocument() error {
 }
 
 func (c *Client) ValidateEmail() error {
-	// validate if it is not blank
+	// validate if it is not empty
 	if c.Email == "" {
-		return errors.New("email should have a valid email address format")
+		return errors.New("email should not be empty")
 	}
 	// validate structure
 	var emailRegex = regexp.MustCompile(email_regex)
@@ -80,10 +85,18 @@ func (c *Client) ValidateEmail() error {
 
 // Validate phone number or/and country
 func (c *Client) ValidatePhone() error {
-	var nilNum uint64 = 0
-	n, _ := c.GetFormatedPhone()
-	if n == nilNum {
-		return errors.New("phone should have a valid phone number format")
+	// check non nil number
+	if c.Phone == uint64(0) {
+		return errors.New("phone should not be empty")
+	}
+	country := c.GetPhoneCountry()
+	if country == "" {
+		return errors.New("phone should have defined country code")
+	}
+	sn := phonenumber.Parse(strconv.FormatUint(c.Phone, 10), country)
+	_, err := strconv.ParseUint(sn, 10, 64)
+	if err != nil {
+		return errors.New("phone should have a valid number")
 	}
 	return nil
 }
@@ -161,13 +174,4 @@ func (c *Client) GetPhoneCountry() (string) {
 	}
 	iso := phonenumber.GetISO3166ByNumber(strconv.FormatUint(c.Phone, 10), false)
 	return iso.Alpha2
-}
-
-func (c *Client) GetFormatedPhone() (uint64, string) {
-	// check non nil number
-	if c.Phone == 0 {
-		return 0, ""
-	}
-	// Put code hear
-	return 0, ""
 }
